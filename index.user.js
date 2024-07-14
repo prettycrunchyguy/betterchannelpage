@@ -32,6 +32,7 @@
             let c = document.createElement("yt-tab-shape"); // channels tab
             let d = document.getElementsByClassName("yt-tab-shape-wiz yt-tab-shape-wiz--host-clickable")[0]; // home tab
             let e = document.getElementsByClassName("yt-tab-group-shape-wiz__slider")[0]; // slider
+            let f = document.getElementsByClassName("style-scope ytd-item-section-renderer"); // sections
             c.innerHTML = '<div class="yt-tab-shape-wiz__tab">Channels</div><div class="yt-tab-shape-wiz__tab-bar"></div>'
             c.setAttribute("class","yt-tab-shape-wiz yt-tab-shape-wiz--host-clickable");
             c.setAttribute("role","tab");
@@ -40,14 +41,17 @@
             c.setAttribute("tab-title","Channels");
             c.onclick = function(){
                 //already = true;
-                a.removeChild(c);
-                delay1 = 0;
-                if (location.href.split("/").length == 4){
-                    history.pushState({id:100},"",location.href+"/channels") // what does id mean??
-                }else{
-                    //location.href = location.href.replace(location.href.split("/")[4],"channels")
-                    history.pushState({id:100},"",location.href.replace(location.href.split("/")[4],"channels")) // what does id mean??
+                if (!(location.href.endsWith("/channels"))){
+                    a.removeChild(c);
+                    delay1 = 0;
+                    if (location.href.split("/").length == 4){
+                        history.pushState({id:100},"",location.href+"/channels") // what does id mean??
+                    }else{
+                        //location.href = location.href.replace(location.href.split("/")[4],"channels")
+                        history.pushState({id:100},"",location.href.replace(location.href.split("/")[4],"channels")) // what does id mean??
+                    }
                 }
+                // find every section and remove/hide the sections that aren't channel lists
             }
             //c.id = "BCP-channels"
             b.insertAdjacentElement("beforebegin",c);
@@ -60,11 +64,14 @@
                 d.children[1].setAttribute("class","yt-tab-shape-wiz__tab-bar");
                 e.setAttribute("style","width:"+c.clientWidth+"px;transform:translateX("+c.offsetLeft+"px);");
                 let tabs = document.getElementsByClassName("yt-tab-shape-wiz yt-tab-shape-wiz--host-clickable"); // all tabs
-                for (let i = 0; i < length; i++){
+                for (let i = 0; i < tabs.length; i++){
                     tabs[i].addEventListener("click",function(event){
                         e.setAttribute("style","width:"+tabs[i].clientWidth+"px;transform:translateX("+tabs[i].offsetLeft+"px);")
                         // switch the slider when clicking on a tab
                     })
+                }
+                for (let i = 0; i < f.length; i++){
+                    
                 }
             }
             //a.appendChild(c);
