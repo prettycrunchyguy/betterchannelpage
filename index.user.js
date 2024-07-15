@@ -38,6 +38,7 @@
             let d = document.getElementsByClassName("yt-tab-shape-wiz yt-tab-shape-wiz--host-clickable")[0]; // home tab
             let e = document.getElementsByClassName("yt-tab-group-shape-wiz__slider")[0]; // slider
             let f = document.querySelectorAll('ytd-item-section-renderer'); // sections
+            let g = document.getElementsByClassName("yt-tab-shape-wiz yt-tab-shape-wiz--host-clickable"); // tabs
             c.innerHTML = '<div class="yt-tab-shape-wiz__tab">Channels</div><div class="yt-tab-shape-wiz__tab-bar"></div>'
             c.setAttribute("class","yt-tab-shape-wiz yt-tab-shape-wiz--host-clickable");
             c.setAttribute("role","tab");
@@ -103,6 +104,20 @@
                         f[i].style.display = 'none'
                     }
                 }
+            }else{
+                if (location.href.endsWith("/featured") || location.href.split("/").length == 4){
+                    d.setAttribute("aria-selected","true");
+                    c.setAttribute("aria-selected","false");
+                    d.children[0].setAttribute("class","yt-tab-shape-wiz__tab yt-tab-shape-wiz__tab--tab-selected");
+                    d.children[1].setAttribute("class","yt-tab-shape-wiz__tab-bar yt-tab-shape-wiz__tab-bar-tab-bar-selected");
+                    e.setAttribute("style","width:"+d.clientWidth+"px;transform:translateX("+d.offsetLeft+"px);");
+                }else{
+                    /*let letters = location.href.split("/")[4].split("")
+                    let first = letters[0].toUpperCase();
+                    letters[0] = '';
+                    let rest = letters.join();
+                    document.querySelector('[tab-title="'+first+rest+'"]').click()*/
+                }
             }
             //a.appendChild(c);
         }else{
@@ -123,6 +138,14 @@
             if (href != location.href){
                 href = location.href;
                 //console.log("changed href");
+                let f = document.querySelectorAll('ytd-item-section-renderer'); // sections
+                for (let i = 0; i < f.length; i++){
+                    try{
+                        f[i].style.display = ''
+                    }catch(e){
+                        
+                    }
+                }
                 if (zSwitch){
                     zSwitch = false;
                     setTimeout(function(){
