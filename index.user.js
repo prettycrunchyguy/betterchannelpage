@@ -18,7 +18,7 @@
     let delay1 = delay; // dont configure
     let delay2 = 100; // delay when switching from one tab to the channels tab
     let zSwitch = false;
-    //let searchLog = true; // better for debugging BECAUSE CHROME DEV TOOLS LAGS LIKE SHIT
+    let searchLog = false; // better for debugging BECAUSE CHROME DEV TOOLS LAGS LIKE SHIT
     function BetterChannelPage(){
         BetterChannelPage.log("betterchannelpage started.");
         //already = false;
