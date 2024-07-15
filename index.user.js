@@ -14,25 +14,30 @@
 
     // Your code here...
     //let already = false;
-    let delay = 500;
-    let delay1 = delay;
+    let delay = 500; // delay when switching pages on youtube (isn't added with delay2)
+    let delay1 = delay; // dont configure
+    let delay2 = 100; // delay when switching from one tab to the channels tab
+    let zSwitch = false;
+    //let searchLog = true; // better for debugging BECAUSE CHROME DEV TOOLS LAGS LIKE SHIT
     function BetterChannelPage(){
-        console.log("betterchannelpage started");
+        BetterChannelPage.log("betterchannelpage started.");
         //already = false;
         // see which tab was selected
         if (delay1 == 0){
+            //let d = document.getElementsByClassName("yt-tab-shape-wiz yt-tab-shape-wiz--host-clickable")[0]; // home tab
+            //d.click();
             let e = document.getElementsByClassName("yt-tab-group-shape-wiz__slider")[0];
         }
         delay1 = delay;
         // see if youtube is on a channel link
         if (location.href.includes("youtube.com/@") || location.href.includes("youtube.com/c/") || location.href.includes("youtube.com/channel/")){
-            console.log("betterchannelpage working.");
+            BetterChannelPage.log("betterchannelpage working.");
             let a = document.getElementsByClassName("yt-tab-group-shape-wiz__tabs")[0]; // tabs list
             let b = document.getElementsByClassName("yt-tab-shape-wiz yt-tab-shape-wiz__tab--last-tab")[0]; // search button
             let c = document.createElement("yt-tab-shape"); // channels tab
             let d = document.getElementsByClassName("yt-tab-shape-wiz yt-tab-shape-wiz--host-clickable")[0]; // home tab
             let e = document.getElementsByClassName("yt-tab-group-shape-wiz__slider")[0]; // slider
-            let f = document.getElementsByClassName("style-scope ytd-item-section-renderer"); // sections
+            let f = document.querySelectorAll('ytd-item-section-renderer'); // sections
             c.innerHTML = '<div class="yt-tab-shape-wiz__tab">Channels</div><div class="yt-tab-shape-wiz__tab-bar"></div>'
             c.setAttribute("class","yt-tab-shape-wiz yt-tab-shape-wiz--host-clickable");
             c.setAttribute("role","tab");
@@ -42,21 +47,39 @@
             c.onclick = function(){
                 //already = true;
                 if (!(location.href.endsWith("/channels"))){
-                    a.removeChild(c);
-                    delay1 = 0;
-                    if (location.href.split("/").length == 4){
-                        history.pushState({id:100},"",location.href+"/channels") // what does id mean??
+                    if (location.href.endsWith("/featured") || location.href.split("/").length == 4){
+                        delay1 = 0;
+                        a.removeChild(c)
+                        if (location.href.split("/").length == 4){
+                            history.pushState({id:Math.floor(Math.random()*100000)},"",location.href+"/channels") // what does id mean??
+                        }else{
+                            //location.href = location.href.replace(location.href.split("/")[4],"channels")
+                            history.pushState({id:Math.floor(Math.random()*100000)},"",location.href.replace(location.href.split("/")[4],"channels")) // what does id mean??
+                        }
                     }else{
-                        //location.href = location.href.replace(location.href.split("/")[4],"channels")
-                        history.pushState({id:100},"",location.href.replace(location.href.split("/")[4],"channels")) // what does id mean??
+                        delay1 = delay2;
+                        zSwitch = true;
+                        d.click();
+                        e.setAttribute("style","width:"+c.clientWidth+"px;transform:translateX("+c.offsetLeft+"px);");
+                        /*setTimeout(function(){
+                            //a.removeChild(c)
+                            if (location.href.split("/").length == 4){
+                                history.pushState({id:Math.floor(Math.random()*100000)},"",location.href+"/channels") // what does id mean??
+                            }else{
+                                //location.href = location.href.replace(location.href.split("/")[4],"channels")
+                                history.pushState({id:Math.floor(Math.random()*100000)},"",location.href.replace(location.href.split("/")[4],"channels")) // what does id mean??
+                            }
+                        },delay2);*/
                     }
+                    
+                    //d.click();
                 }
                 // find every section and remove/hide the sections that aren't channel lists
             }
             //c.id = "BCP-channels"
             b.insertAdjacentElement("beforebegin",c);
             if (location.href.endsWith("/channels")){
-                console.log("betterchannelpage on channels tab");
+                BetterChannelPage.log("betterchannelpage on channels tab");
                 c.setAttribute("aria-selected","true");
                 d.setAttribute("aria-selected","false");
                 c.innerHTML = '<div class="yt-tab-shape-wiz__tab yt-tab-shape-wiz__tab--tab-selected">Channels</div><div class="yt-tab-shape-wiz__tab-bar yt-tab-shape-wiz__tab-bar--tab-bar-selected"></div>'
@@ -71,13 +94,26 @@
                     })
                 }
                 for (let i = 0; i < f.length; i++){
-                    
+                    try{
+                        let link = f[i].children[2].children[0].children[0].children[0].children[0].children[0].children[1].children[1].children[0];
+                        if (!(link.href.endsWith("#"))){
+                            f[i].style.display = 'none'
+                        }
+                    }catch(e){
+                        f[i].style.display = 'none'
+                    }
                 }
             }
             //a.appendChild(c);
         }else{
             console.log('betterchannelpage not working. links like "youtube.com/MrBeast" will not work, but links like "youtube.com/c/MrBeast" will.')
         }
+    }
+    BetterChannelPage.log = function(a){
+        if (searchLog){
+            document.getElementById('search-input').children[0].value = a;
+        }
+        console.log(a);
     }
     window.onload = function(){
         setTimeout(BetterChannelPage,delay1);
@@ -87,7 +123,14 @@
             if (href != location.href){
                 href = location.href;
                 //console.log("changed href");
-                setTimeout(BetterChannelPage,delay1);
+                if (zSwitch){
+                    zSwitch = false;
+                    setTimeout(function(){
+                        history.pushState({id:Math.floor(Math.random()*100000)},"",location.href.replace(location.href.split("/")[4],"channels"))
+                    },0)
+                }else{
+                    setTimeout(BetterChannelPage,delay1);
+                }
             }
         })
         observer.observe(body,{childList:true,subtree:true});
